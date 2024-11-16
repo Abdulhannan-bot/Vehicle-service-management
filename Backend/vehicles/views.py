@@ -51,6 +51,7 @@ def get_vehicle_by_id(request, vehicle_id):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def add_vehicle(request):
+    print(request.data)
     serializer = VehicleSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -85,7 +86,6 @@ def edit_vehicle(request, vehicle_id):
             'data': serializer.data
         }, status=status.HTTP_200_OK)
     
-
     return Response({
         'success': False,
         'msg': 'Invalid data',
