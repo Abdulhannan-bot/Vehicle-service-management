@@ -95,7 +95,13 @@ const ComponentPage = () => {
                                             className="mr-2">
                                             Edit
                                         </Button>
-                                        <Button color="danger">Delete</Button>
+                                        <Button
+                                            color="danger"
+                                            onClick={() => {
+                                                deleteComponenetData(x.id);
+                                            }}>
+                                            Delete
+                                        </Button>
                                     </td>
                                 </tr>
                             );
@@ -109,10 +115,6 @@ const ComponentPage = () => {
                 actionType={actionType}
                 onSubmit={handleSubmit}
                 pageType="component"
-                // isOpen={isModalOpen}
-                // toggle={toggleModal}
-                // actionType={actionType}
-                // selectedRecord={selectedRecord}
             />
         </div>
     );

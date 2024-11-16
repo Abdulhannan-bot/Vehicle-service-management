@@ -86,7 +86,13 @@ const Payments = () => {
                                             className="mr-2">
                                             Edit
                                         </Button>
-                                        <Button color="danger">Delete</Button>
+                                        <Button
+                                            color="danger"
+                                            onClick={() => {
+                                                deletePaymentData(x.id);
+                                            }}>
+                                            Delete
+                                        </Button>
                                     </td>
                                 </tr>
                             );

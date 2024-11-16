@@ -10,6 +10,7 @@ import Vehicle from './pages/Vehicles';
 import ComponentPage from './pages/ComponentsPage';
 import Issues from './pages/Issues';
 import Payments from './pages/Payments';
+import Dashboard from './pages/Dashboard';
 import { Provider } from './context/apiContext';
 
 const App = () => {
@@ -18,6 +19,7 @@ const App = () => {
             <Router>
                 <Layout>
                     <Routes>
+                        <Route path="/" element={<Dashboard />} />
                         <Route path="/vehicle" element={<Vehicle />} />
                         <Route path="/component" element={<ComponentPage />} />
                         <Route path="/issues" element={<Issues />} />
