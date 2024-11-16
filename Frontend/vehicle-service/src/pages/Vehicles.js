@@ -1,11 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Button, Table } from 'reactstrap';
 import RecordModal from '../components/RecordModal';
+import { Context } from '../context/apiContext';
 
 const Vehicle = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [actionType, setActionType] = useState('Add'); // 'Add' or 'Edit'
     const [selectedRecord, setSelectedRecord] = useState(null);
+    const [selectedRecordId, setSelectedRecordId] = useState(null);
+    const {
+        getVehicles,
+        patchVehicleData,
+        addVehicle,
+        deleteVehicleData,
+        vehiclesData,
+    } = useContext(Context);
+
+    useEffect(() => {
+        getVehicles();
+    }, []);
 
     const toggleModal = () => setIsModalOpen(!isModalOpen);
 
@@ -15,10 +28,21 @@ const Vehicle = () => {
         toggleModal();
     };
 
-    const handleEditRecord = (record) => {
+    const handleEditRecord = (record, id) => {
+        setSelectedRecordId(id);
         setActionType('Edit');
         setSelectedRecord(record); // Set the selected record for editing
         toggleModal();
+    };
+
+    const handleSubmit = (formData) => {
+        console.log(formData);
+
+        if (actionType === 'Add') {
+            addVehicle(formData);
+        } else {
+            patchVehicleData(selectedRecordId, formData);
+        }
     };
 
     return (
@@ -40,136 +64,47 @@ const Vehicle = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Model X</td>
-                        <td>ABC-1234</td>
-                        <td>John Doe</td>
-                        <td>Engine</td>
-                        <td>$500</td>
-                        <td>No</td>
-                        <td>
-                            <Button
-                                color="warning"
-                                onClick={() =>
-                                    handleEditRecord({
-                                        model: 'Model X',
-                                        registrationNumber: 'ABC-1234',
-                                        ownerName: 'John Doe',
-                                        issueType: 'Engine',
-                                        repairCost: '$500',
-                                        isRepaired: false,
-                                    })
-                                }
-                                className="mr-2">
-                                Edit
-                            </Button>
-                            <Button color="danger">Delete</Button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Model Y</td>
-                        <td>XYZ-5678</td>
-                        <td>Jane Smith</td>
-                        <td>Brakes</td>
-                        <td>$300</td>
-                        <td>Yes</td>
-                        <td>
-                            <Button
-                                color="warning"
-                                onClick={() =>
-                                    handleEditRecord({
-                                        model: 'Model Y',
-                                        registrationNumber: 'XYZ-5678',
-                                        ownerName: 'Jane Smith',
-                                        issueType: 'Brakes',
-                                        repairCost: '$300',
-                                        isRepaired: true,
-                                    })
-                                }
-                                className="mr-2">
-                                Edit
-                            </Button>
-                            <Button color="danger">Delete</Button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Model S</td>
-                        <td>LMN-3456</td>
-                        <td>Michael Johnson</td>
-                        <td>Transmission</td>
-                        <td>$1,200</td>
-                        <td>No</td>
-                        <td>
-                            <Button
-                                color="warning"
-                                onClick={() =>
-                                    handleEditRecord({
-                                        model: 'Model S',
-                                        registrationNumber: 'LMN-3456',
-                                        ownerName: 'Michael Johnson',
-                                        issueType: 'Transmission',
-                                        repairCost: '$1,200',
-                                        isRepaired: false,
-                                    })
-                                }
-                                className="mr-2">
-                                Edit
-                            </Button>
-                            <Button color="danger">Delete</Button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Model 3</td>
-                        <td>DEF-7890</td>
-                        <td>Emily Davis</td>
-                        <td>Battery</td>
-                        <td>$800</td>
-                        <td>Yes</td>
-                        <td>
-                            <Button
-                                color="warning"
-                                onClick={() =>
-                                    handleEditRecord({
-                                        model: 'Model 3',
-                                        registrationNumber: 'DEF-7890',
-                                        ownerName: 'Emily Davis',
-                                        issueType: 'Battery',
-                                        repairCost: '$800',
-                                        isRepaired: true,
-                                    })
-                                }
-                                className="mr-2">
-                                Edit
-                            </Button>
-                            <Button color="danger">Delete</Button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Model Z</td>
-                        <td>GHI-6543</td>
-                        <td>Chris Brown</td>
-                        <td>Suspension</td>
-                        <td>$700</td>
-                        <td>No</td>
-                        <td>
-                            <Button
-                                color="warning"
-                                onClick={() =>
-                                    handleEditRecord({
-                                        model: 'Model Z',
-                                        registrationNumber: 'GHI-6543',
-                                        ownerName: 'Chris Brown',
-                                        issueType: 'Suspension',
-                                        repairCost: '$700',
-                                        isRepaired: false,
-                                    })
-                                }
-                                className="mr-2">
-                                Edit
-                            </Button>
-                            <Button color="danger">Delete</Button>
-                        </td>
-                    </tr>
+                    {vehiclesData &&
+                        vehiclesData.map((x, i) => {
+                            return (
+                                <tr key={i}>
+                                    <td>{x.model}</td>
+                                    <td>{x.registration_number}</td>
+                                    <td>{x.owner_name}</td>
+                                    <td>
+                                        {x.issue_type === 1 ? 'New' : 'Repair'}
+                                    </td>
+                                    <td>{x.repair_cost}</td>
+                                    <td>{x.is_repaired ? 'Yes' : 'No'}</td>
+                                    <td>
+                                        <Button
+                                            color="warning"
+                                            onClick={() =>
+                                                handleEditRecord(
+                                                    {
+                                                        model: x.model,
+                                                        registration_number:
+                                                            x.registration_number,
+                                                        owner_name:
+                                                            x.owner_name,
+                                                        issue_type:
+                                                            x.issue_type,
+                                                        repair_cost:
+                                                            x.repair_cost,
+                                                        is_repaired:
+                                                            x.is_repaired,
+                                                    },
+                                                    x.id
+                                                )
+                                            }
+                                            className="mr-2">
+                                            Edit
+                                        </Button>
+                                        <Button color="danger">Delete</Button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                 </tbody>
             </Table>
 
@@ -179,12 +114,8 @@ const Vehicle = () => {
                 toggle={toggleModal}
                 record={selectedRecord}
                 actionType={actionType}
-                // onSubmit={handleSubmit}
+                onSubmit={handleSubmit}
                 pageType="vehicle"
-                // isOpen={isModalOpen}
-                // toggle={toggleModal}
-                // actionType={actionType}
-                // selectedRecord={selectedRecord}
             />
         </div>
     );

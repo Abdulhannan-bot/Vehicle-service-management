@@ -9,18 +9,23 @@ import Layout from './components/Layout';
 import Vehicle from './pages/Vehicles';
 import ComponentPage from './pages/ComponentsPage';
 import Issues from './pages/Issues';
+import Payments from './pages/Payments';
+import { Provider } from './context/apiContext';
 
 const App = () => {
     return (
-        <Router>
-            <Layout>
-                <Routes>
-                    <Route path="/vehicle" element={<Vehicle />} />
-                    <Route path="/component" element={<ComponentPage />} />
-                    <Route path="/issues" element={<Issues />} />
-                </Routes>
-            </Layout>
-        </Router>
+        <Provider>
+            <Router>
+                <Layout>
+                    <Routes>
+                        <Route path="/vehicle" element={<Vehicle />} />
+                        <Route path="/component" element={<ComponentPage />} />
+                        <Route path="/issues" element={<Issues />} />
+                        <Route path="/payments" element={<Payments />} />
+                    </Routes>
+                </Layout>
+            </Router>
+        </Provider>
     );
 };
 

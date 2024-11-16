@@ -17,25 +17,81 @@ const RecordModal = ({
     onSubmit,
     pageType,
 }) => {
-    const [formData, setFormData] = useState({
-        model: '',
-        registration_number: '',
-        owner_name: '',
-        issue_type: 1, // default value for dropdown (1: "new component")
-        repair_cost: '',
-        is_repaired: false,
-        name: '',
-        component_type: 1, // default value (1: "new")
-        purchase_price: '',
-        repair_price: '',
-        vehicle: '',
-        issue_description: '',
-        status: 1, // default value for status (1: "pending")
-    });
+    // const [formData, setFormData] = useState({
+    //     model: '',
+    //     registration_number: '',
+    //     owner_name: '',
+    //     issue_type: 1,
+    //     repair_cost: '',
+    //     is_repaired: false,
+    //     name: '',
+    //     component_type: 1,
+    //     purchase_price: '',
+    //     repair_price: '',
+    //     vehicle: '',
+    //     issue_description: '',
+    //     status: 1,
+    // });
+
+    const getInitialState = (actionType) => {
+        switch (actionType) {
+            case 'vehicle':
+                return {
+                    model: '',
+                    registration_number: '',
+                    owner_name: '',
+                    issue_type: 1,
+                    repair_cost: '',
+                    is_repaired: false,
+                };
+            case 'component':
+                return {
+                    name: '',
+                    component_type: 1,
+                    purchase_price: '',
+                    repair_price: '',
+                };
+            case 'issue':
+                return {
+                    vehicle: '',
+                    issue_description: '',
+                    issue_type: 1,
+                    status: 1,
+                };
+            case 'issue':
+                return {
+                    vehicle: '',
+                    amount_paid: '',
+                    payment_method: '',
+                };
+            default:
+                return {};
+        }
+    };
+    const [formData, setFormData] = useState(getInitialState(actionType));
+    const [vehicles, setVehicles] = useState([]);
+
+    useEffect(() => {
+        const fetchVehicles = async () => {
+            try {
+                const response = await fetch(
+                    'http://localhost:8000/api/vehicles/'
+                );
+                const data = await response.json();
+                setVehicles(data.data);
+            } catch (error) {
+                console.error('Error fetching vehicles:', error);
+            }
+        };
+
+        if (pageType === 'issue' || pageType === 'payment') {
+            fetchVehicles();
+        }
+    }, [pageType]);
 
     useEffect(() => {
         if (record) {
-            setFormData(record); // prefill form for edit
+            setFormData(record);
         }
     }, [record]);
 
@@ -56,7 +112,7 @@ const RecordModal = ({
     };
 
     const handleSubmit = () => {
-        onSubmit(formData);
+        onSubmit(formData, actionType);
         toggle();
     };
 
@@ -124,7 +180,6 @@ const RecordModal = ({
                     </div>
 
                     <div className="form-group">
-                        <Label for="is_repaired">Is Repaired?</Label>
                         <Input
                             type="checkbox"
                             id="is_repaired"
@@ -132,6 +187,7 @@ const RecordModal = ({
                             checked={formData.is_repaired}
                             onChange={handleCheckboxChange}
                         />
+                        <Label for="is_repaired">Is Repaired?</Label>
                     </div>
                 </>
             );
@@ -189,14 +245,22 @@ const RecordModal = ({
             return (
                 <>
                     <div className="form-group">
-                        <Label for="vehicle">Vehicle</Label>
-                        <Input
-                            type="text"
-                            name="vehicle"
-                            id="vehicle"
-                            value={formData.vehicle}
-                            onChange={handleChange}
-                        />
+                        <div className="form-group">
+                            <Label for="vehicle">Vehicle</Label>
+                            <Input
+                                type="select"
+                                name="vehicle"
+                                id="vehicle"
+                                value={formData.vehicle}
+                                onChange={handleChange}>
+                                <option value="">Select a Vehicle</option>
+                                {vehicles.map((vehicle) => (
+                                    <option key={vehicle.id} value={vehicle.id}>
+                                        {vehicle.model}
+                                    </option>
+                                ))}
+                            </Input>
+                        </div>
                     </div>
 
                     <div className="form-group">
@@ -234,6 +298,49 @@ const RecordModal = ({
                             <option value={1}>Pending</option>
                             <option value={2}>Resolved</option>
                         </Input>
+                    </div>
+                </>
+            );
+        } else if (pageType === 'payment') {
+            return (
+                <>
+                    <div className="form-group">
+                        <div className="form-group">
+                            <Label for="vehicle">Vehicle</Label>
+                            <Input
+                                type="select"
+                                name="vehicle"
+                                id="vehicle"
+                                value={formData.vehicle}
+                                onChange={handleChange}>
+                                <option value="">Select a Vehicle</option>
+                                {vehicles.map((vehicle) => (
+                                    <option key={vehicle.id} value={vehicle.id}>
+                                        {vehicle.model}
+                                    </option>
+                                ))}
+                            </Input>
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <Label for="amount_paid">Amount Paid</Label>
+                        <Input
+                            type="number"
+                            name="amount_paid"
+                            id="amount_paid"
+                            value={formData.amount_paid}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <Label for="payment_method">Payment Method</Label>
+                        <Input
+                            type="text"
+                            name="payment_method"
+                            id="payment_method"
+                            value={formData.payment_method}
+                            onChange={handleChange}
+                        />
                     </div>
                 </>
             );

@@ -1,15 +1,15 @@
 // src/components/Sidebar.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Navbar, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
 
 const Sidebar = () => {
     return (
-        <div
-            className="sidebar bg-light p-3"
-            style={{ width: '250px', height: '100vh' }}>
-            <h4>Navigation</h4>
-            <Nav vertical>
+        <Navbar color="light" light expand="md" className="p-3">
+            <NavbarBrand tag={Link} to="/">
+                Vehicle Service Management
+            </NavbarBrand>
+            <Nav className="ms-auto" navbar>
                 <NavItem>
                     <NavLink tag={Link} to="/vehicle">
                         Vehicle Page
@@ -25,8 +25,13 @@ const Sidebar = () => {
                         Issues Page
                     </NavLink>
                 </NavItem>
+                <NavItem>
+                    <NavLink tag={Link} to="/payments">
+                        Payments Page
+                    </NavLink>
+                </NavItem>
             </Nav>
-        </div>
+        </Navbar>
     );
 };
 
