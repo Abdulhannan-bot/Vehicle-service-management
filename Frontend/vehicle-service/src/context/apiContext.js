@@ -10,6 +10,9 @@ export const Provider = ({ children }) => {
     const [issuesData, setIssuesData] = useState(null);
     const [componentsData, setComponentsData] = useState(null);
     const [paymentsData, setPaymentsData] = useState(null);
+    const [dailyData, setDailyData] = useState(null);
+    const [monthlyData, setMonthlyData] = useState(null);
+    const [yearlyData, setYearlyData] = useState(null);
 
     const getPayments = () => {
         axios
@@ -49,14 +52,15 @@ export const Provider = ({ children }) => {
 
     const deletePaymentData = (id) => {
         axios
-            .delete(`${BASE_URL}components/delete/${id}/`)
+            .delete(`${BASE_URL}payments/delete/${id}/`)
             .then((res) => {
                 let incomingData = res.data;
-                if (incomingData.success) {
-                    getPayments();
-                }
+                // console.log(incomingData);
+                getPayments();
             })
-            .catch((err) => {});
+            .catch((err) => {
+                // console.log(err);
+            });
     };
 
     const getComponents = () => {
@@ -100,9 +104,7 @@ export const Provider = ({ children }) => {
             .delete(`${BASE_URL}components/delete/${id}/`)
             .then((res) => {
                 let incomingData = res.data;
-                if (incomingData.success) {
-                    getComponents();
-                }
+                getComponents();
             })
             .catch((err) => {});
     };
@@ -148,9 +150,7 @@ export const Provider = ({ children }) => {
             .delete(`${BASE_URL}issues/delete/${id}/`)
             .then((res) => {
                 let incomingData = res.data;
-                if (incomingData.success) {
-                    getIssues();
-                }
+                getIssues();
             })
             .catch((err) => {});
     };
@@ -196,11 +196,22 @@ export const Provider = ({ children }) => {
             .delete(`${BASE_URL}vehicles/delete/${id}/`)
             .then((res) => {
                 let incomingData = res.data;
-                if (incomingData.success) {
-                    getVehicles();
-                }
+                getVehicles();
             })
             .catch((err) => {});
+    };
+
+    const fetchRevenueData = (endpoint) => {
+        return axios.get(endpoint).then((response) => response.data);
+    };
+    const getRevenueData = async () => {
+        const daily = await fetchRevenueData(`${BASE_URL}revenue/daily/`);
+        const monthly = await fetchRevenueData(`${BASE_URL}revenue/monthly/`);
+        const yearly = await fetchRevenueData(`${BASE_URL}revenue/yearly/`);
+
+        setDailyData(daily);
+        setMonthlyData(monthly);
+        setYearlyData(yearly);
     };
 
     return (
@@ -210,6 +221,10 @@ export const Provider = ({ children }) => {
                 componentsData,
                 issuesData,
                 paymentsData,
+                dailyData,
+                monthlyData,
+                yearlyData,
+                getRevenueData,
                 getPayments,
                 addPayment,
                 patchPaymentData,
