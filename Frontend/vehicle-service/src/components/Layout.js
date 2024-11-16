@@ -5,12 +5,12 @@ import Sidebar from './Siedebar';
 
 const Layout = ({ children }) => {
     return (
-        <div className="d-flex">
+        <div>
             {/* Sidebar */}
             <Sidebar />
 
             {/* Content Area */}
-            <div className="content flex-grow-1 p-3">{children}</div>
+            <div className="container content flex-grow-1 p-3">{children}</div>
         </div>
     );
 };

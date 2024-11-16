@@ -1,26 +1,26 @@
-// src/pages/ComponentPage.js
 import React, { useState, useContext, useEffect } from 'react';
-import RecordModal from '../components/RecordModal';
 import { Button, Table } from 'reactstrap';
+import RecordModal from '../components/RecordModal';
 import { Context } from '../context/apiContext';
-const ComponentPage = () => {
+
+const Payments = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [actionType, setActionType] = useState('Add'); // 'Add' or 'Edit'
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [selectedRecordId, setSelectedRecordId] = useState(null);
     const {
-        getComponents,
-        addComponent,
-        componentsData,
-        patchComponentData,
-        deleteComponenetData,
+        getPayments,
+        patchPaymentData,
+        addPayment,
+        deletePaymentData,
+        paymentsData,
     } = useContext(Context);
 
-    const toggleModal = () => setIsModalOpen(!isModalOpen);
-
     useEffect(() => {
-        getComponents();
+        getPayments();
     }, []);
+
+    const toggleModal = () => setIsModalOpen(!isModalOpen);
 
     const handleAddRecord = () => {
         setActionType('Add');
@@ -37,57 +37,48 @@ const ComponentPage = () => {
 
     const handleSubmit = (formData) => {
         console.log(formData);
+
         if (actionType === 'Add') {
-            addComponent(formData);
+            addPayment(formData);
         } else {
-            patchComponentData(selectedRecordId, formData);
+            patchPaymentData(selectedRecordId, formData);
         }
     };
 
     return (
         <div>
-            <h2>Component Page</h2>
+            <h2>Payment Page</h2>
             <Button color="primary" onClick={handleAddRecord} className="mb-3">
                 Add Record
             </Button>
             <Table striped>
                 <thead>
                     <tr>
-                        <th>Component Name</th>
-                        <th>Type</th>
-                        <th>Purchase Price</th>
-                        <th>Repair Cost</th>
+                        <th>Vehicle</th>
+                        <th>Amount Paid</th>
+                        <th>Payment Method</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {componentsData &&
-                        componentsData.map((x, i) => {
+                    {paymentsData &&
+                        paymentsData.map((x, i) => {
                             return (
                                 <tr key={i}>
-                                    <td>{x.name}</td>
-                                    <td>
-                                        {x.component_type === 1
-                                            ? 'New'
-                                            : 'Repair'}
-                                    </td>
-                                    <td>{x.purchase_price}</td>
-                                    <td>{x.repair_price}</td>
+                                    <td>{x.vehicle.model}</td>
+                                    <td>{x.amount_paid}</td>
+                                    <td>{x.payment_method}</td>
                                     <td>
                                         <Button
                                             color="warning"
                                             onClick={() =>
                                                 handleEditRecord(
                                                     {
-                                                        name: x.name,
-                                                        type:
-                                                            x.component_type ===
-                                                            1
-                                                                ? 'New'
-                                                                : 'Repair',
-                                                        purchase_price:
-                                                            x.purchase_price,
-                                                        repair_price:
-                                                            x.repair_price,
+                                                        vehicle: x.vehicle.id,
+                                                        amount_paid:
+                                                            x.amount_paid,
+                                                        payment_method:
+                                                            x.payment_method,
                                                     },
                                                     x.id
                                                 )
@@ -102,20 +93,18 @@ const ComponentPage = () => {
                         })}
                 </tbody>
             </Table>
+
+            {/* Render the RecordModal */}
             <RecordModal
                 isOpen={isModalOpen}
                 toggle={toggleModal}
                 record={selectedRecord}
                 actionType={actionType}
                 onSubmit={handleSubmit}
-                pageType="component"
-                // isOpen={isModalOpen}
-                // toggle={toggleModal}
-                // actionType={actionType}
-                // selectedRecord={selectedRecord}
+                pageType="payment"
             />
         </div>
     );
 };
 
-export default ComponentPage;
+export default Payments;

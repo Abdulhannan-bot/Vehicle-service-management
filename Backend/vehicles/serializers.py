@@ -17,6 +17,12 @@ class VehicleSerializer(serializers.ModelSerializer):
         return value
     
     def validate_registration_number(self, value):
-        if Vehicle.objects.filter(registration_number = value, is_repaired=False).exists():
-            raise serializers.ValidationError("This registration number is already in use.")
+        if not self.instance or (self.instance and self.instance.registration_number != value):
+            if Vehicle.objects.filter(registration_number=value, is_repaired=False).exists():
+                raise serializers.ValidationError("This registration number is already in use.")
         return value
+    
+class VehicleIssueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vehicle
+        fields = ['id', 'model']

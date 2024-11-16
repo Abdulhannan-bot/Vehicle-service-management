@@ -2,12 +2,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Payment
-from .serializers import PaymentSerializer
+from .serializers import PaymentSerializer, GetPaymentSerializer
 
 @api_view(['GET'])
 def get_payments(request):
     payments = Payment.objects.all()
-    serializer = PaymentSerializer(payments, many=True)
+    serializer = GetPaymentSerializer(payments, many=True)
     return Response({'success': True, 'data': serializer.data}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
